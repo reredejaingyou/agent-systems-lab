@@ -17,6 +17,9 @@ This is not a benchmark score claim. The included Terminal-Bench integration is 
 - Workspace-bounded shell and file tools
 - Explicit command allowlist and timeout policy
 - Deterministic scripted-model mode for tests and local demos
+- OpenAI-compatible model adapter with strict JSON action parsing
+- Common API-key redaction before observations, traces, state, and reports are persisted
+- Structured failure categories (`model_error`, `invalid_action`, `tool_policy`, `tool_execution`, `step_budget`)
 - Terminal-Bench command builder and environment validator
 - Docker image, example task, and regression tests
 
@@ -39,7 +42,21 @@ asl status --run-dir .asl-runs/<run-id>
 asl resume --run-dir .asl-runs/<run-id>
 ```
 
-The example uses a deterministic plan instead of a hosted model, so it runs without credentials. Production model adapters belong behind the `AgentModel` protocol in `src/agent_systems_lab/model.py`; model credentials must not be stored in traces or committed to this repository.
+The example uses a deterministic plan instead of a hosted model, so it runs without credentials.
+
+### Run with an OpenAI-compatible endpoint
+
+```bash
+# PowerShell
+$env:ASL_OPENAI_API_KEY = "<key>"
+$env:ASL_OPENAI_BASE_URL = "https://api.openai.com/v1"
+
+asl run --provider openai-compatible --model <model-id> \
+  --workspace examples/hello_workspace \
+  --task "Create greeting.txt containing hello from the agent."
+```
+
+The provider must implement the `/chat/completions` request shape. The runtime requests one strict JSON action at a time. API keys are read only from environment variables and are redacted from persisted run artifacts; do not place secrets in task instructions or workspace files.
 
 ## Run model
 
@@ -86,7 +103,7 @@ python -m compileall src
 ## Roadmap
 
 1. **v0.1** — deterministic runtime, policy, checkpoints, traces, and Terminal-Bench adapter
-2. **v0.2** — OpenAI-compatible model adapter, tool-result compaction, structured failure taxonomy
+2. **v0.2** — OpenAI-compatible model adapter, secret redaction, and structured failure taxonomy
 3. **v0.3** — Harbor agent package, reproducible Terminal-Bench report, and SWE-bench adapter
 
 ## Safety and disclosure

@@ -10,6 +10,8 @@ from datetime import UTC, datetime
 from pathlib import Path
 from uuid import uuid4
 
+from .redaction import redact
+
 
 def utc_now() -> str:
     return datetime.now(UTC).isoformat()
@@ -23,6 +25,7 @@ class RunState:
     status: str = "running"
     next_step: int = 0
     observations: list[dict[str, str]] = field(default_factory=list)
+    failures: list[dict[str, str]] = field(default_factory=list)
     started_at: str = field(default_factory=utc_now)
     updated_at: str = field(default_factory=utc_now)
     final_summary: str = ""
@@ -55,7 +58,7 @@ class RunStore:
         self._atomic_write(self.state_path, json.dumps(asdict(state), indent=2, sort_keys=True))
 
     def trace(self, event: str, payload: dict[str, object]) -> None:
-        entry = {"at": utc_now(), "event": event, **payload}
+        entry = redact({"at": utc_now(), "event": event, **payload})
         with self.trace_path.open("a", encoding="utf-8") as handle:
             handle.write(json.dumps(entry, sort_keys=True) + "\n")
             handle.flush()
@@ -69,6 +72,7 @@ class RunStore:
             "workspace": state.workspace,
             "steps_completed": state.next_step,
             "final_summary": state.final_summary,
+            "failures": state.failures,
             "started_at": state.started_at,
             "finished_at": utc_now(),
         }

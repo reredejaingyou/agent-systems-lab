@@ -74,3 +74,20 @@ def test_workspace_policy_blocks_path_escape(tmp_path: Path) -> None:
         assert "escapes workspace" in str(error)
     else:
         raise AssertionError("Expected path escape to be rejected.")
+
+
+def test_trace_redacts_common_api_key_values(tmp_path: Path) -> None:
+    workspace = tmp_path / "workspace"
+    workspace.mkdir()
+    result = runtime(
+        workspace,
+        [
+            Action.call("write_file", {"path": "secret.txt", "content": "sk_abcdefghijklmnopqrstuvwxyz"}),
+            Action.finish("done"),
+        ],
+    ).start(task="Write a test fixture.", runs_root=tmp_path / "runs")
+    trace = (result.run_dir / "trace.jsonl").read_text(encoding="utf-8")
+    state = (result.run_dir / "state.json").read_text(encoding="utf-8")
+    assert "sk_abcdefghijklmnopqrstuvwxyz" not in trace
+    assert "sk_abcdefghijklmnopqrstuvwxyz" not in state
+    assert "[REDACTED]" in trace
