@@ -1,0 +1,13 @@
+services:
+  demo:
+    build: .
+    command:
+      - run
+      - --workspace
+      - /app/examples/hello_workspace
+      - --task
+      - Create greeting.txt containing hello from the agent.
+      - --plan
+      - /app/examples/hello_plan.json
+      - --runs-root
+      - /tmp/asl-runs

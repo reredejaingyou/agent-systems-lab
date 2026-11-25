@@ -1,0 +1,23 @@
+[
+  {
+    "kind": "tool",
+    "tool": "write_file",
+    "arguments": {
+      "path": "greeting.txt",
+      "content": "hello from the agent\n"
+    },
+    "summary": "Create the requested greeting file."
+  },
+  {
+    "kind": "tool",
+    "tool": "read_file",
+    "arguments": {
+      "path": "greeting.txt"
+    },
+    "summary": "Verify the file contents."
+  },
+  {
+    "kind": "finish",
+    "summary": "Created and verified greeting.txt."
+  }
+]
