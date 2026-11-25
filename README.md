@@ -122,7 +122,7 @@ python -m compileall src
 1. **v0.1** — deterministic runtime, policy, checkpoints, traces, and Terminal-Bench adapter
 2. **v0.2** — OpenAI-compatible model adapter, secret redaction, and structured failure taxonomy
 3. **v0.3** — Harbor external-agent entrypoint, Terminal-Bench 2.0 reproducibility manifest, and artifact contract
-4. **v0.4** — Verified Terminal-Bench smoke report and SWE-bench adapter
+4. **v0.4** — Verified Terminal-Bench smoke report (`scripts/run_terminal_bench_smoke.py`) and SWE-bench adapter
 
 ## Safety and disclosure
 

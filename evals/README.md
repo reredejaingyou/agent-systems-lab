@@ -25,7 +25,20 @@ python scripts/prepare_terminal_bench_smoke.py \
 
 ### 3. Run Harbor
 
-Use the printed command. Keep concurrency at `1` for the first smoke run. Pass credentials with Harbor `--agent-env` / `--ae` rather than embedding them in scripts.
+First validate the harness with the oracle agent (no model key):
+
+```bash
+python scripts/run_terminal_bench_smoke.py --mode oracle --tasks openssl-selfsigned-cert
+```
+
+Then run the Agent Systems Lab smoke (requires `ASL_OPENAI_API_KEY`):
+
+```bash
+python scripts/run_terminal_bench_smoke.py --mode agent --model <model-id> \
+  --tasks openssl-selfsigned-cert regex-log
+```
+
+Keep concurrency at `1` for the first smoke run. Pass credentials with Harbor `--agent-env` / `--ae` or via the smoke script environment.
 
 ### 4. Package artifacts
 

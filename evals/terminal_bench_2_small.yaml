@@ -8,7 +8,10 @@ benchmark:
 run:
   concurrency: 1
   max_agent_steps: 20
-  task_count: 10
+  task_count: 2
+  tasks:
+    - openssl-selfsigned-cert
+    - regex-log
 artifacts:
   required:
     - resolved_command.txt

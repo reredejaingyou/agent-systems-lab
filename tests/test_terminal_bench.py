@@ -8,10 +8,21 @@ def test_terminal_bench_command_defaults_to_v2() -> None:
     command = build_command(
         agent="agent_systems_lab.integrations.harbor_agent:AgentSystemsLabHarborAgent",
         model="example/model",
+        tasks=["openssl-selfsigned-cert"],
+        jobs_dir="evals/artifacts/jobs",
     )
     assert f"--dataset {DEFAULT_DATASET}" in command
     assert "--n-concurrent 1" in command
     assert "AgentSystemsLabHarborAgent" in command
+    assert "--include-task-name openssl-selfsigned-cert" in command
+    assert "--jobs-dir evals/artifacts/jobs" in command
+
+
+def test_oracle_command_omits_model() -> None:
+    command = build_command(agent="oracle", model="", include_model=False, tasks=["regex-log"])
+    assert "--agent oracle" in command
+    assert "--model" not in command
+    assert "--include-task-name regex-log" in command
 
 
 def test_harbor_write_command_base64_encodes_content() -> None:

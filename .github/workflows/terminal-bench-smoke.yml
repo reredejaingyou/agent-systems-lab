@@ -1,0 +1,72 @@
+name: terminal-bench-smoke
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "oracle (no model) or agent"
+        required: true
+        default: oracle
+        type: choice
+        options:
+          - oracle
+          - agent
+      model:
+        description: "OpenAI-compatible model id (agent mode only)"
+        required: false
+        default: ""
+      tasks:
+        description: "Space-separated Terminal-Bench task names"
+        required: true
+        default: "openssl-selfsigned-cert regex-log"
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install package
+        run: pip install -e ".[dev,terminal-bench]"
+
+      - name: Prepare artifacts
+        run: |
+          python scripts/prepare_terminal_bench_smoke.py \
+            --model "${{ inputs.model || 'oracle' }}" \
+            --output-dir evals/artifacts
+
+      - name: Run oracle smoke
+        if: inputs.mode == 'oracle'
+        run: |
+          python scripts/run_terminal_bench_smoke.py \
+            --mode oracle \
+            --tasks ${{ inputs.tasks }} \
+            --output-dir evals/artifacts \
+            --jobs-dir evals/artifacts/jobs
+
+      - name: Run agent smoke
+        if: inputs.mode == 'agent'
+        env:
+          ASL_OPENAI_API_KEY: ${{ secrets.ASL_OPENAI_API_KEY }}
+          ASL_OPENAI_BASE_URL: ${{ secrets.ASL_OPENAI_BASE_URL }}
+        run: |
+          test -n "$ASL_OPENAI_API_KEY"
+          test -n "${{ inputs.model }}"
+          python scripts/run_terminal_bench_smoke.py \
+            --mode agent \
+            --model "${{ inputs.model }}" \
+            --tasks ${{ inputs.tasks }} \
+            --output-dir evals/artifacts \
+            --jobs-dir evals/artifacts/jobs
+
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: terminal-bench-smoke
+          path: evals/artifacts
