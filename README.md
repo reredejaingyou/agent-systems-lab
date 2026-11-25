@@ -84,14 +84,31 @@ This is a baseline policy, not a complete sandbox. Benchmark runs should execute
 
 ## Terminal-Bench
 
-Install [Harbor](https://github.com/harbor-framework/terminal-bench) separately, then check the adapter:
+Install the pinned Harbor extra, then check the adapter:
 
 ```bash
+pip install -e ".[terminal-bench]"
 asl terminal-bench check
 asl terminal-bench command --agent <your-harbor-agent> --model <model-id>
 ```
 
-The command prints a pinned-command template. Before publishing a result, run the benchmark oracle repeatedly in your target environment and retain the exact dataset tag, Harbor version, image digest, model configuration, and generated traces.
+The command prints a pinned-command template for Terminal-Bench 2.0. Before publishing a result, run the benchmark oracle repeatedly in your target environment and retain the exact dataset tag, Harbor version, image digest, model configuration, and generated traces.
+
+### Run this runtime as a Harbor custom agent
+
+`agent_systems_lab.integrations.harbor_agent:AgentSystemsLabHarborAgent` implements Harbor's external `BaseAgent` interface. Its loop runs on the Harbor host; commands are executed exclusively through Harbor's task environment.
+
+```bash
+export ASL_OPENAI_API_KEY="<key>"
+export ASL_OPENAI_BASE_URL="https://api.openai.com/v1"
+
+harbor run --dataset terminal-bench@2.0 \
+  --agent agent_systems_lab.integrations.harbor_agent:AgentSystemsLabHarborAgent \
+  --model <model-id> \
+  --n-concurrent 1
+```
+
+Start with the reproducibility manifest at `evals/terminal_bench_2_small.yaml`. Do not publish a score until the same pinned dataset, Harbor version, model settings, and artifact bundle can be rerun.
 
 ## Development
 
@@ -104,7 +121,8 @@ python -m compileall src
 
 1. **v0.1** — deterministic runtime, policy, checkpoints, traces, and Terminal-Bench adapter
 2. **v0.2** — OpenAI-compatible model adapter, secret redaction, and structured failure taxonomy
-3. **v0.3** — Harbor agent package, reproducible Terminal-Bench report, and SWE-bench adapter
+3. **v0.3** — Harbor external-agent entrypoint, Terminal-Bench 2.0 reproducibility manifest, and artifact contract
+4. **v0.4** — Verified Terminal-Bench smoke report and SWE-bench adapter
 
 ## Safety and disclosure
 

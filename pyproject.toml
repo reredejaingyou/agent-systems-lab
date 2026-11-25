@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "agent-systems-lab"
-version = "0.1.0"
+version = "0.3.0"
 description = "A reproducible runtime and evaluation harness for tool-using agents."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -14,6 +14,7 @@ dependencies = []
 
 [project.optional-dependencies]
 dev = ["pytest>=8.0"]
+terminal-bench = ["harbor>=0.27,<0.28"]
 
 [project.scripts]
 asl = "agent_systems_lab.cli:main"

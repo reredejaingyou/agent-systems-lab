@@ -27,11 +27,14 @@ def check_environment() -> TerminalBenchEnvironment:
     )
 
 
-def build_command(*, agent: str, model: str, dataset: str = "terminal-bench/terminal-bench@latest") -> str:
+DEFAULT_DATASET = "terminal-bench@2.0"
+
+
+def build_command(*, agent: str, model: str, dataset: str = DEFAULT_DATASET) -> str:
     if not agent or not model:
         raise ValueError("Both --agent and --model are required.")
     return (
-        f"uv run harbor run -d {dataset} "
+        f"harbor run --dataset {dataset} "
         f"--agent {agent} --model {model} "
-        "--env modal --n-concurrent 1"
+        "--n-concurrent 1"
     )

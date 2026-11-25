@@ -1,0 +1,24 @@
+# Reproducibility manifest for the first public Terminal-Bench smoke run.
+# Replace task IDs only after recording the exact Harbor and dataset versions.
+benchmark:
+  name: Terminal-Bench
+  dataset: terminal-bench@2.0
+  harness: harbor
+  agent: agent_systems_lab.integrations.harbor_agent:AgentSystemsLabHarborAgent
+run:
+  concurrency: 1
+  max_agent_steps: 20
+  task_count: 10
+artifacts:
+  required:
+    - resolved_command.txt
+    - environment_versions.json
+    - agent-systems-lab.trace.jsonl
+    - harbor_results.json
+    - report.md
+publication:
+  publish_model_id: true
+  publish_prompt_version: true
+  publish_dataset_tag: true
+  publish_container_image_digest: true
+  publish_failures: true

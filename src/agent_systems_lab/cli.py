@@ -8,7 +8,7 @@ from pathlib import Path
 from .model import ScriptedModel
 from .openai_compat import ModelProviderError, OpenAICompatibleModel
 from .runtime import AgentRuntime
-from .terminal_bench import build_command, check_environment
+from .terminal_bench import DEFAULT_DATASET, build_command, check_environment
 from .tools import ToolPolicy, WorkspaceTools
 
 
@@ -43,7 +43,7 @@ def build_parser() -> argparse.ArgumentParser:
     command = terminal_subcommands.add_parser("command", help="Print a reproducible Harbor command template.")
     command.add_argument("--agent", required=True)
     command.add_argument("--model", required=True)
-    command.add_argument("--dataset", default="terminal-bench/terminal-bench@latest")
+    command.add_argument("--dataset", default=DEFAULT_DATASET)
     return parser
 
 
